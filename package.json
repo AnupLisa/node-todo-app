@@ -1,0 +1,14 @@
+{
+  "name": "love-calculator",
+  "version": "1.0.0",
+  "description": "A simple Node.js love calculator app with browser output.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.4"
+  },
+  "author": "",
+  "license": "MIT"
+}

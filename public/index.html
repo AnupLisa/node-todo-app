@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Love Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      padding: 2rem;
+      color: #3e0b2e;
+      background: radial-gradient(circle at top left, #ff9ec6 0%, transparent 35%),
+                  radial-gradient(circle at bottom right, #8f4bff 0%, transparent 30%),
+                  linear-gradient(180deg, #ffe8f3 0%, #ffdaee 35%, #ffd7f0 100%);
+      background-attachment: fixed;
+    }
+    .container {
+      max-width: 560px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 28px;
+      box-shadow: 0 25px 70px rgba(160, 58, 108, 0.22);
+      padding: 2.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+    }
+    h1 {
+      margin-top: 0;
+      color: #d0286b;
+      text-align: center;
+      letter-spacing: 0.03em;
+    }
+    p {
+      color: #5d2448;
+      line-height: 1.6;
+    }
+    label {
+      display: block;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      color: #5a2f53;
+    }
+    input {
+      width: 100%;
+      padding: 0.85rem;
+      margin-top: 0.4rem;
+      border: 1px solid rgba(177, 127, 160, 0.5);
+      border-radius: 14px;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.98);
+      color: #4b2344;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    button {
+      width: 100%;
+      background: linear-gradient(135deg, #ff5fa5 0%, #d7378f 100%);
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 16px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 12px 25px rgba(215, 55, 143, 0.25);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 30px rgba(215, 55, 143, 0.28);
+    }
+    #result {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: center;
+    }
+    .heart-box {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      padding: 4rem 1.5rem 1.75rem;
+      background: #ffe8f4;
+      color: #612a4a;
+      border-radius: 50% 50% 45% 45% / 55% 55% 45% 45%;
+      box-shadow: 0 18px 40px rgba(196, 67, 120, 0.18);
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      overflow: hidden;
+    }
+    .heart-box::before,
+    .heart-box::after {
+      content: '';
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      background: #ffb9d6;
+      border-radius: 50%;
+      top: -70px;
+      box-shadow: 0 10px 30px rgba(206, 78, 130, 0.15);
+      z-index: -1;
+    }
+    .heart-box::before {
+      left: 45%;
+    }
+    .heart-box::after {
+      left: 5%;
+    }
+    .heart-box p {
+      margin: 0;
+      line-height: 1.8;
+      position: relative;
+      z-index: 1;
+    }
+    .heart-box strong {
+      color: #a42261;
+    }
+    .score {
+      margin-top: 1rem;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #bf1d6d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Love Calculator</h1>
+    <p>Enter two names and see your love score in the browser.</p>
+
+    <form id="loveForm">
+      <label for="name1">First name
+        <input id="name1" type="text" placeholder="Enter first name" required>
+      </label>
+
+      <label for="name2">Second name
+        <input id="name2" type="text" placeholder="Enter second name" required>
+      </label>
+
+      <button type="submit">Calculate</button>
+    </form>
+
+    <div id="result" aria-live="polite"></div>
+  </div>
+
+  <script>
+    function calculateLove(name1, name2) {
+      const combined = (name1 + name2).toLowerCase().replace(/[^a-z]/g, '');
+      if (!combined) return 0;
+
+      let score = 0;
+      for (let i = 0; i < combined.length; i++) {
+        score += combined.charCodeAt(i);
+      }
+
+      return score % 101;
+    }
+
+    const form = document.getElementById('loveForm');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name1 = document.getElementById('name1').value.trim();
+      const name2 = document.getElementById('name2').value.trim();
+      const score = calculateLove(name1, name2);
+
+      let message = '';
+      if (score > 80) {
+        message = 'Great match!';
+      } else if (score > 50) {
+        message = 'Nice connection.';
+      } else if (score > 20) {
+        message = 'There is potential.';
+      } else {
+        message = 'Maybe keep it friendly.';
+      }
+
+      result.innerHTML = `
+        <div class="heart-box">
+          <p><strong>${name1}</strong> and <strong>${name2}</strong></p>
+          <p class="score">${score}%</p>
+          <p>${message}</p>
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>
