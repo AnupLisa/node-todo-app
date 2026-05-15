@@ -5,154 +5,378 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Love Calculator</title>
   <style>
+    :root {
+      color-scheme: dark;
+      --bg1: #1a0229;
+      --bg2: #2f0049;
+      --accent: #ff6eb4;
+      --accent-2: #8c5dff;
+      --surface: rgba(255, 255, 255, 0.12);
+      --surface-strong: rgba(255, 255, 255, 0.18);
+      --text: #f4e6ff;
+      --text-muted: #d0b6dd;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
       min-height: 100vh;
-      padding: 2rem;
-      color: #3e0b2e;
-      background: radial-gradient(circle at top left, #ff9ec6 0%, transparent 35%),
-                  radial-gradient(circle at bottom right, #8f4bff 0%, transparent 30%),
-                  linear-gradient(180deg, #ffe8f3 0%, #ffdaee 35%, #ffd7f0 100%);
-      background-attachment: fixed;
-    }
-    .container {
-      max-width: 560px;
-      margin: 0 auto;
-      background: rgba(255, 255, 255, 0.92);
-      border-radius: 28px;
-      box-shadow: 0 25px 70px rgba(160, 58, 108, 0.22);
-      padding: 2.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(10px);
-    }
-    h1 {
-      margin-top: 0;
-      color: #d0286b;
-      text-align: center;
-      letter-spacing: 0.03em;
-    }
-    p {
-      color: #5d2448;
-      line-height: 1.6;
-    }
-    label {
-      display: block;
-      margin-bottom: 1rem;
-      font-weight: 700;
-      color: #5a2f53;
-    }
-    input {
-      width: 100%;
-      padding: 0.85rem;
-      margin-top: 0.4rem;
-      border: 1px solid rgba(177, 127, 160, 0.5);
-      border-radius: 14px;
-      font-size: 1rem;
-      background: rgba(255, 255, 255, 0.98);
-      color: #4b2344;
-      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
-    }
-    button {
-      width: 100%;
-      background: linear-gradient(135deg, #ff5fa5 0%, #d7378f 100%);
-      color: white;
-      border: none;
-      padding: 1rem;
-      border-radius: 16px;
-      font-size: 1.05rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 12px 25px rgba(215, 55, 143, 0.25);
-    }
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 18px 30px rgba(215, 55, 143, 0.28);
-    }
-    #result {
-      margin-top: 1.5rem;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top left, rgba(255, 110, 180, 0.24), transparent 20%),
+                  radial-gradient(circle at 20% 20%, rgba(140, 93, 255, 0.22), transparent 18%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow-x: hidden;
       display: flex;
+      align-items: center;
       justify-content: center;
+      padding: 2rem;
     }
-    .heart-box {
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"%3E%3Cdefs%3E%3CradialGradient id="g" cx="50%25" cy="50%25" r="50%25"%3E%3Cstop offset="0%25" stop-color="%23ff7ebb" stop-opacity="0.35"/%3E%3Cstop offset="100%25" stop-color="%23ff7ebb" stop-opacity="0"/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width="160" height="160" fill="url(%23g)"/%3E%3C/svg%3E') center/320px 320px repeat;
+      opacity: 0.22;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .scene {
       position: relative;
-      width: 100%;
-      max-width: 420px;
-      padding: 4rem 1.5rem 1.75rem;
-      background: #ffe8f4;
-      color: #612a4a;
-      border-radius: 50% 50% 45% 45% / 55% 55% 45% 45%;
-      box-shadow: 0 18px 40px rgba(196, 67, 120, 0.18);
-      text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.8);
+      width: min(100%, 980px);
+      z-index: 1;
+      display: grid;
+      gap: 2rem;
+      grid-template-columns: 1.3fr 1fr;
+      align-items: stretch;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      padding: 2rem;
+      position: relative;
       overflow: hidden;
     }
-    .heart-box::before,
-    .heart-box::after {
+
+    .panel::after {
       content: '';
       position: absolute;
-      width: 140px;
-      height: 140px;
-      background: #ffb9d6;
-      border-radius: 50%;
-      top: -70px;
-      box-shadow: 0 10px 30px rgba(206, 78, 130, 0.15);
-      z-index: -1;
+      inset: 0;
+      background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.05), transparent 45%);
+      pointer-events: none;
     }
-    .heart-box::before {
-      left: 45%;
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 420px;
+      gap: 1.5rem;
     }
-    .heart-box::after {
-      left: 5%;
-    }
-    .heart-box p {
+
+    .hero h1 {
       margin: 0;
-      line-height: 1.8;
+      font-size: clamp(2.5rem, 4vw, 4rem);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: #fff;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--text-muted);
+      max-width: 36rem;
+      line-height: 1.75;
+    }
+
+    .hero .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.8rem 1rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #ffd2ff;
+      font-weight: 700;
+      width: max-content;
+    }
+
+    .avatar-card {
+      display: grid;
+      gap: 1rem;
+      padding: 1.5rem;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.08));
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .avatar-art {
+      width: 100%;
+      min-height: 210px;
+      border-radius: 24px;
+      background: radial-gradient(circle at top, rgba(255, 110, 180, 0.28), transparent 45%),
+                  radial-gradient(circle at 80% 20%, rgba(140, 93, 255, 0.25), transparent 30%),
+                  linear-gradient(135deg, #4b2468, #1c0439);
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 0 28px rgba(255,255,255,0.06);
+    }
+
+    .avatar-art svg {
+      width: clamp(160px, 50%, 220px);
+      height: auto;
+      filter: drop-shadow(0 20px 20px rgba(0, 0, 0, 0.22));
+    }
+
+    .avatar-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .avatar-info .avatar-name {
+      display: grid;
+      gap: 0.2rem;
+    }
+
+    .avatar-info strong {
+      color: #fff;
+      font-size: 1.15rem;
+      letter-spacing: 0.02em;
+    }
+
+    .avatar-info small {
+      color: var(--text-muted);
+    }
+
+    .form-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    label {
+      display: block;
+      color: #f8edf7;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    input {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 1rem 1.1rem;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      outline: none;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    input:focus {
+      transform: translateY(-1px);
+      box-shadow: inset 0 0 0 1px rgba(255, 110, 180, 0.75), 0 12px 25px rgba(245, 94, 193, 0.15);
+    }
+
+    .button-group {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    button {
+      border: none;
+      border-radius: 18px;
+      padding: 1rem 1.25rem;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff70c1, #9f5eff);
+      box-shadow: 0 18px 40px rgba(255, 110, 180, 0.25);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 45px rgba(255, 110, 180, 0.32);
+    }
+
+    #result {
+      margin-top: 0.5rem;
+      min-height: 190px;
+      display: grid;
+      place-items: center;
+    }
+
+    .heart-box {
+      width: 100%;
+      padding: 2rem;
+      border-radius: 34px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.1));
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.18);
+      text-align: center;
       position: relative;
-      z-index: 1;
+      overflow: hidden;
     }
+
+    .heart-box::before {
+      content: '♥';
+      position: absolute;
+      top: -16px;
+      right: -30px;
+      font-size: 4rem;
+      color: rgba(255, 110, 180, 0.12);
+      transform: rotate(25deg);
+    }
+
+    .heart-box p {
+      margin: 0.75rem 0;
+      line-height: 1.7;
+      color: #ffe9ff;
+    }
+
     .heart-box strong {
-      color: #a42261;
+      color: #fff;
     }
+
     .score {
       margin-top: 1rem;
-      font-size: 1.6rem;
+      font-size: clamp(2rem, 4vw, 3rem);
       font-weight: 800;
-      color: #bf1d6d;
+      color: #ffddff;
+      text-shadow: 0 0 22px rgba(255, 110, 180, 0.45);
+    }
+
+    .clip {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.4;
+      pointer-events: none;
+      animation: drift 12s ease-in-out infinite;
+    }
+
+    .clip:nth-child(1) { width: 110px; height: 110px; top: 18%; left: -35px; background: rgba(255, 110, 180, 0.18); animation-duration: 10s; }
+    .clip:nth-child(2) { width: 85px; height: 85px; top: 62%; right: -25px; background: rgba(140, 93, 255, 0.16); animation-duration: 14s; }
+    .clip:nth-child(3) { width: 100px; height: 100px; top: 10%; right: 40%; background: rgba(255, 255, 255, 0.08); animation-duration: 18s; }
+    .clip:nth-child(4) { width: 60px; height: 60px; bottom: 15%; left: 10%; background: rgba(255, 110, 180, 0.16); animation-duration: 11s; }
+
+    @keyframes drift {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      50% { transform: translateY(-18px) translateX(12px); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @media (max-width: 900px) {
+      .scene { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 1.25rem;
+      }
+
+      .panel {
+        padding: 1.5rem;
+      }
+
+      .avatar-art {
+        min-height: 180px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Love Calculator</h1>
-    <p>Enter two names and see your love score in the browser.</p>
+  <div class="scene">
+    <div class="panel hero">
+      <div>
+        <span class="badge">AI-powered match vibes</span>
+        <h1>Love Calculator</h1>
+        <p>Type your names, get a fun score, and enjoy a sparkling interface with a generated Copilot avatar and animated background effects.</p>
+      </div>
 
-    <form id="loveForm">
-      <label for="name1">First name
+      <div class="avatar-card">
+        <div class="avatar-art" aria-hidden="true">
+          <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff97d6" />
+                <stop offset="100%" stop-color="#8b5aff" />
+              </linearGradient>
+              <radialGradient id="g2" cx="50%" cy="30%" r="60%">
+                <stop offset="0%" stop-color="#fff" stop-opacity="0.95" />
+                <stop offset="100%" stop-color="#fff" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+            <rect x="10" y="35" width="200" height="160" rx="32" fill="url(#g1)"/>
+            <circle cx="110" cy="85" r="46" fill="#fff" opacity="0.92"/>
+            <circle cx="90" cy="80" r="10" fill="#2f0f45"/>
+            <circle cx="130" cy="80" r="10" fill="#2f0f45"/>
+            <path d="M80 115 Q110 145 140 115" stroke="#2f0f45" stroke-width="10" fill="none" stroke-linecap="round"/>
+            <circle cx="60" cy="50" r="20" fill="url(#g2)" opacity="0.72"/>
+            <circle cx="170" cy="50" r="16" fill="url(#g2)" opacity="0.72"/>
+          </svg>
+        </div>
+        <div class="avatar-info">
+          <div class="avatar-name">
+            <strong>Copilot</strong>
+            <small>Your AI matchmaker</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="clip"></div>
+      <div class="clip"></div>
+      <div class="clip"></div>
+      <div class="clip"></div>
+    </div>
+
+    <div class="panel form-panel">
+      <div>
+        <p style="margin-bottom: 1.25rem; color: #f6e8ff;">Enter the names you want to compare below and feel the energy of the interface while the calculation runs.</p>
+      </div>
+      <form id="loveForm">
+        <label for="name1">First name</label>
         <input id="name1" type="text" placeholder="Enter first name" required>
-      </label>
 
-      <label for="name2">Second name
+        <label for="name2">Second name</label>
         <input id="name2" type="text" placeholder="Enter second name" required>
-      </label>
 
-      <button type="submit">Calculate</button>
-    </form>
-
-    <div id="result" aria-live="polite"></div>
+        <div class="button-group">
+          <button type="submit">Calculate your score</button>
+        </div>
+      </form>
+      <div id="result" aria-live="polite"></div>
+    </div>
   </div>
 
   <script>
     function calculateLove(name1, name2) {
       const combined = (name1 + name2).toLowerCase().replace(/[^a-z]/g, '');
       if (!combined) return 0;
-
       let score = 0;
       for (let i = 0; i < combined.length; i++) {
         score += combined.charCodeAt(i);
       }
-
       return score % 101;
     }
 
@@ -164,21 +388,19 @@
       const name1 = document.getElementById('name1').value.trim();
       const name2 = document.getElementById('name2').value.trim();
       const score = calculateLove(name1, name2);
-
       let message = '';
       if (score > 80) {
-        message = 'Great match!';
+        message = 'Great match! Sparks are flying.';
       } else if (score > 50) {
-        message = 'Nice connection.';
+        message = 'Nice connection. Keep it glowing.';
       } else if (score > 20) {
-        message = 'There is potential.';
+        message = 'There is potential. Sweet curiosity.';
       } else {
-        message = 'Maybe keep it friendly.';
+        message = 'Maybe keep it friendly, but fun is near.';
       }
-
       result.innerHTML = `
         <div class="heart-box">
-          <p><strong>${name1}</strong> and <strong>${name2}</strong></p>
+          <p><strong>${name1}</strong> + <strong>${name2}</strong></p>
           <p class="score">${score}%</p>
           <p>${message}</p>
         </div>
